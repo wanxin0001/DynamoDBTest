@@ -1,4 +1,5 @@
 import java.io.File;
+import java.util.Date;
 import java.util.Iterator;
 
 import com.amazonaws.regions.Regions;
@@ -27,6 +28,7 @@ public class MoviesLoadData {
 		Iterator<JsonNode> iter = rootNode.iterator();
 		
 		ObjectNode currentNode;
+		int i = 0;
 		
 		while (iter.hasNext()) {
 			currentNode = (ObjectNode) iter.next();
@@ -38,12 +40,15 @@ public class MoviesLoadData {
 				table.putItem(new Item().withPrimaryKey("year", year, "title", title)
 						.withJSON("info", currentNode.path("info").toString()));
 				
-				System.out.println("PutItem succeeded: " + year + " " + title);
+				if (i % 100 == 0) {
+					System.out.println("Current count: " + i + ", time:" + new Date());
+				}
 			} catch (Exception e) {
 				System.err.println("Unable to add moive: " + year + " " + title);
 				System.err.println(e.getMessage());
 				break;
 			}
+			i++;
 		}
 		
 		parser.close();
